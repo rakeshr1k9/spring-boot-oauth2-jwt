@@ -34,4 +34,18 @@ public class HelloWorld {
         return String.format("Welcom '%s'!", principal.getName());
 
     }
+
+    // A helper class to make our controller output look nice
+    public static class RestMsg {
+        private String msg;
+        public RestMsg(String msg) {
+            this.msg = msg;
+        }
+        public String getMsg() {
+            return msg;
+        }
+        public void setMsg(String msg) {
+            this.msg = msg;
+        }
+    }
 }

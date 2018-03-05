@@ -1,5 +1,6 @@
 package com.ogmatech.springbootoauth2jwt.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,11 +10,20 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity(debug = true)
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    public UserDetailsService userDetailsService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception{
         http
@@ -27,17 +37,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception{
         auth
-                .inMemoryAuthentication() //creating user in memory
-                .withUser("user")
-                .password("password1").roles("USER")
-                .and().withUser("admin")
-                .password("password2").authorities("ROLE_ADMIN");
+                .userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder);
     }
 
     @Override
     @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception{
+    public AuthenticationManager authenticationManager() throws Exception{
         //provides the default AuthenticationManager as a Bean
-        return super.authenticationManagerBean();
+        return super.authenticationManager();
     }
 }
